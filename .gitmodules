@@ -1,3 +1,6 @@
 [submodule "bats-core"]
 	path = bats-core
 	url = https://github.com/bats-core/bats-core.git
+[submodule "lib/shflags"]
+	path = lib/shflags
+	url = https://github.com/kward/shflags.git
