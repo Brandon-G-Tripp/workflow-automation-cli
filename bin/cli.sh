@@ -2,6 +2,7 @@
 # cli.sh
 #
 . ./lib/shflags/shflags
+. ./lib/utils.sh
 
 # Define options to parse
 OPTIONS=(
@@ -21,14 +22,8 @@ if [ ${FLAGS[h]} ]; then
     exit 0 
 fi
 
-# get workflow name (first positional arg)
-workflow_name=$1
-
 # ensure workflow name passed
-if [ -z "$workflow_name" ]; then
-    echo "Error: Missing required workflow name argument."
-    exit 1
-fi
+validate_params "${FLAGS[w]}" "Workflow"
 
 # check workflow name exists
 if [ ! -f "workflows/$workflow_name.yaml" ]; then
