@@ -15,3 +15,11 @@ print_help() {
         
     EOF
 } 
+
+validate_params() {
+    if [ -z "$1" ]; then 
+        echo "Error: $2 is required" >&2
+        print_help
+        exit 1
+    fi
+} 
