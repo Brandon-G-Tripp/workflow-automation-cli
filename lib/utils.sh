@@ -29,3 +29,11 @@ validate_params() {
         exit 1
     fi
 } 
+
+_cli_completion() {
+    local comp=$1
+
+    if ["$comp" = "workflow_name" ]; then
+        COMPREPLY=($(compgen -W "example backup" -- "$cur"))
+    fi
+} 
