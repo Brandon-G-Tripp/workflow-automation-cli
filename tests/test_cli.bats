@@ -12,7 +12,7 @@
 @test "CLI should print help with -h flag" {
     run bash bin/cli.sh -h
     [ "$status" -eq 0 ]
-    [ "$output" = "Usage: cli.sh <workflow_name> [options]" ]
+    [ "$output" = "Usage: $0 [-h] [-V] [-v] [-w <workflow>]" ]
 } 
 
 
