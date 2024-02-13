@@ -4,72 +4,116 @@
 source ./lib/utils.sh
 
 # Define long option names
-LONGOPTS="help,version,verbose,workflow:"
+# LONGOPTS="help,version,verbose,workflow:"
+# eval set -- $(getopt --long "$LONGOPTS" -- "$@")
 
-# before getopts
-echo "Before getopt"
+# echo " longopts: $LONGOPTS"
 
-# Parse options
-ARGS=$(getopt -o "hVv:w:" --long "$LONGOPTS" -n "$0" -- "$@")
-eval set -- "$ARGS"
+# # shortopts
+# SHORTOPTS=$(getopt -o "hVvw:" -n "cli.sh" -- "$@")
+# eval set -- $SHORTOPTS
+
+# echo "shortopts: $SHORTOPTS"
+
+OPTS=$(getopt -o "" --long help,version,verbose,workflow: -- "$@")
+eval set -- "$OPTS"
+
+#  Set default workflow
+# workflow=${workflow:-example}
 
 while true; do 
-    case $1 in
-        -h|--help)
-            #print exact help output 
-            echo -e "Help output: $output"
-
-            # print script name substitution
-            echo "Script name: $0"
-
-            # hard code expected string
-            echo -e "Usage: cli.sh [-h] [-V] [-v] [-w <workflow>]"
-            exit 0
-            ;;
-        -V|--version)
-            echo -e "workflow v0.1.0"
-            exit 0 
-            ;;
-        -v|--verbose)
-            verbose=true
-            shift
-            ;;
-        -w|--workflow)
-            workflow="$2"
-            shift 2
-            ;;
-        --)
-            shift 
-            break
-            ;;
-        *)
-            echo "Invalid option: $1" >&2
-            exit 1
-            ;;
+    case $1 in 
+        --help) HELP=1; shift;;
+        --version) VERSION=1; shift;;
+        --workflow) WORKFLOW=$2; shift 2;;
+        --) shift; break;;
     esac
 done
 
-# after getopts
-echo "After getopt"
+while getopts ":hvw:" opt; do 
+    case $opt in 
+        h) HELP=1;;
+        v) VERBOSE=1;;
+        w) WORKFLOW=$OPTARG;;
+    esac
+done
 
-workflow=${workflow:-example}
 
-if [ "$verbose" == true ]; then
-    echo -e "Running ${workflow} workflow verbose"
-    exit 0
+shift $((OPTIND -1))
+
+COMMAND=$1
+
+if [[ -z "$WORKFLOW" ]]; then 
+    WORKFLOW=$1
+fi 
+
+
+# while true;  
+#     echo "first arg $1, second arg $2"
+#     echo "all args $@"
+#     case $1 in
+#         -h|--help)
+#             help=true
+#             shift
+#             ;;
+#         -V|--version)
+#             echo -e "workflow v0.1.0"
+#             exit 0 
+#             ;;
+#         -v|--verbose)
+#             verbose=true
+#             ;;
+#         -w|--workflow)
+#             workflow="$2"
+#             shift 2
+#             ;;
+#         --)
+#             shift 
+#             break
+#             ;;
+#         *)
+#             echo "Invalid option: $1" >&2
+#             exit 1
+#             ;;
+#     esac
+# done
+
+if [ "$HELP" != 1 ]; then 
+    validate_params "$WORKFLOW" "Workflow"
 fi
 
-# ensure workflow name passed
-validate_params "$workflow" "workflow"
+if [ "$HELP" == 1 ]; then 
+    print_help 
+    exit 0;
+fi
+
+if [ "$VERSION" == 1 ]; then 
+    echo -e "workflow v0.1.0"
+    exit 0;
+fi 
+
+
+
+# after getopts
+echo "After getopt"
+echo "Option: $1 Value: $2"
+
+
+echo "Workflow name: $workflow"
+
+if [ "$verbose" == true ]; then
+    echo -e "Running ${WORKFLOW} workflow verbose"
+    exit 0
+fi
 
 # add completion
 complete -o bashdefault -o default -F _cli_completion cli.sh
 # check workflow name exists
-if [ ! -f "workflows/${workflow}.yaml" ]; then
-    echo -e "Error: Invalid workflow name '${workflow}'."
+if [ ! -f "workflows/${WORKFLOW}.yaml" ]; then
+    echo -e "Error: Invalid workflow name '${WORKFLOW}'."
     exit 1
 fi
 
-source "workflows/${workflow}.yaml"
+source "workflows/${WORKFLOW}.yaml"
 
 
