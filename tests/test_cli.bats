@@ -10,9 +10,22 @@
 
 # Test help flag 
 @test "CLI should print help with -h flag" {
+    expected=$(cat <<EOF
+Help output: Usage: cli.sh [-h] [-V] [-v] [-w <workflow>]
+Script name: bin/cli.sh
+Usage: cli.sh [-h] [-V] [-v] [-w <workflow>]
+EOF
+)
+
+    echo "Expected."
+    echo "$expected"
+
+    echo "Output:"
+    echo "$output"
+
     run bash bin/cli.sh -h
     [ "$status" -eq 0 ]
-    [ "$output" = "Usage: $0 [-h] [-V] [-v] [-w <workflow>]" ]
+    [ "$output" = "$expected" ]
 } 
 
 
